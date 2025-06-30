@@ -1,6 +1,6 @@
 using JuMP, Gurobi, Random, DataFrames, CSV, Plots
 
-# 基础数据
+# data
 T = 12
 
 Random.seed!(42)
@@ -37,7 +37,7 @@ spoilage_rates = Dict("product1" => 0.099, "product2" => 0.126, "product3" => 0.
 
 cd(@__DIR__)
 
-# 定义模型
+# model
 function deterministic_product_production(lambda)
     model = Model(Gurobi.Optimizer)
     set_optimizer_attribute(model, "OutputFlag", 0)
@@ -86,7 +86,7 @@ function deterministic_product_production(lambda)
     return JuMP.value(total_cost), JuMP.value(total_carbon), JuMP.objective_value(model)
 end
 
-# 运行不同的lambda
+# run different lambda
 lambda_values = 0:0.1:1
 results = DataFrame(lambda=Float64[], total_cost=Float64[], total_carbon=Float64[], objective_value=Float64[])
 
@@ -98,9 +98,9 @@ end
 # 保存
 CSV.write("model2_lambda_tradeoff_results.csv", results)
 
-using Printf  # 需要这个模块来使用 @sprintf
+using Printf 
 
-# Trade-off 曲线
+# Trade-off curves
 tradeoff_plot = plot(
     results.lambda, results.total_cost,
     label="Total Cost", xlabel="Lambda", ylabel="Value",
@@ -116,7 +116,7 @@ plot!(
 display(tradeoff_plot)
 savefig(tradeoff_plot, "model2_lambda_tradeoff_plot_annotated.png")
 
-# Pareto 前沿图
+# Pareto front 
 pareto_plot = plot(
     results.total_carbon, results.total_cost,
     xlabel="Total Carbon", ylabel="Total Cost",
