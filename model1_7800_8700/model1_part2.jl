@@ -1,6 +1,6 @@
 using JuMP, Gurobi, Random, CSV, DataFrames, Plots
 
-# 数据定义
+# Data
 T = 12
 
 Random.seed!(42)
@@ -97,7 +97,7 @@ function deterministic_product_production(caps)
     return JuMP.value(total_cost), JuMP.value(total_carbon), JuMP.value.(b), JuMP.termination_status(model)
 end
 
-# 测试不同的碳排放上限
+# test different caps
 caps_range = 8700:-5:7800
 results = []
 
@@ -107,17 +107,17 @@ for cap in caps_range
     push!(results, (cap = cap, total_cost = total_cost, total_carbon = total_carbon, backorder = sum(backorder), optimality = status))
 end
 
-# 保存结果
+# Save results
 results_df = DataFrame(results)
 CSV.write("model1_carbon_cap_results.csv", results_df)
 
-# 打印结果
+# Print results
 println("Carbon Cap, Total Cost, Total Carbon, Total Backorder, Optimality")
 for result in results
     println("$(result.cap), $(result.total_cost), $(result.total_carbon), $(result.backorder), $(result.optimality)")
 end
 
-# 绘图
+# Plotting
 results_df = CSV.read("model1_carbon_cap_results.csv", DataFrame)
 carbon_cap = results_df.cap
 total_cost = results_df.total_cost
